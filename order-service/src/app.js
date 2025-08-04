@@ -5,9 +5,13 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const setupSwagger = require('../swagger');
+const path = require('path'); // <-- Import the 'path' module
+
+// Use path.join to create a reliable, absolute path to swagger.js
+const setupSwagger = require(path.join(__dirname, '../swagger'));
+
 const ordersRouter = require('./api/orders');
-const authRouter = require('./api/auth'); // For the bonus task
+const authRouter = require('./api/auth');
 const errorHandler = require('./middleware/errorHandler');
 
 // Create the Express application
