@@ -14,8 +14,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # No need to run 'npm install' here, Elastic Beanstalk will do it on the server.
-
       # THIS STEP IS NEW AND SIMPLIFIED
       # It zips the entire 'order-service' directory into a 'deploy.zip' file.
       # The -x flag ensures the node_modules folder is excluded.
