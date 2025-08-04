@@ -14,24 +14,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
+      # No need to run 'npm install' here, Elastic Beanstalk will do it on the server.
 
-      - name: Install Backend Dependencies
-        working-directory: ./order-service
-        run: npm install
-
+      # THIS STEP IS NEW AND SIMPLIFIED
+      # It zips the entire 'order-service' directory into a 'deploy.zip' file.
+      # The -x flag ensures the node_modules folder is excluded.
       - name: Generate Deployment Package
         run: |
-          mkdir deploy
-          cp -R order-service/src deploy/
-          cp order-service/package.json deploy/
-          cp order-service/package-lock.json deploy/
-          cp order-service/swagger.js deploy/ # <-- THIS IS THE NEW LINE
-          cd deploy
-          zip -r ../deploy.zip .
+          cd order-service
+          zip -r ../deploy.zip . -x "node_modules/*"
 
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v21
@@ -42,5 +33,6 @@ jobs:
           environment_name: OrderManagementSystem-env
           version_label: "v${{ github.run_number }}-${{ github.sha }}"
           region: "ap-south-1"
+          # The deployment package is now at the root level
           deployment_package: deploy.zip
           use_existing_version_if_available: true
