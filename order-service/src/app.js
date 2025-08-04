@@ -1,23 +1,13 @@
 // File: /order-service/src/app.js
 
-// Load environment variables from .env file at the very beginning
 require('dotenv').config();
-
 const express = require('express');
 const cors = require('cors');
-const path = require('path'); // <-- Import the built-in 'path' module
-
-// Use path.join(__dirname, '../swagger') to create a reliable, absolute path.
-// __dirname is a special variable in Node.js that gives the path of the current file (i.e., /src).
-// path.join then correctly navigates up one level to find swagger.js.
-// This works on ANY operating system (Windows, Linux, Mac).
-const setupSwagger = require(path.join(__dirname, '../swagger'));
-
+const path = require('path');
 const ordersRouter = require('./api/orders');
 const authRouter = require('./api/auth');
 const errorHandler = require('./middleware/errorHandler');
 
-// Create the Express application
 const app = express();
 
 // --- Middleware ---
@@ -25,18 +15,22 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// --- Swagger API Documentation Setup ---
-setupSwagger(app);
+// --- THIS IS THE CRITICAL FIX ---
+// Only load and set up Swagger if we are NOT in the production environment.
+// Elastic Beanstalk automatically sets NODE_ENV to 'production'.
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Development environment detected, setting up Swagger...');
+  const setupSwagger = require(path.join(__dirname, '../swagger'));
+  setupSwagger(app);
+}
 
 // --- API Routes ---
 app.get('/', (req, res) => {
     res.status(200).json({ 
-        message: 'Order Management Service is running.',
-        docs: '/api-docs'
+        message: 'Order Management Service is running.'
     });
 });
 
-// Use the routers for all routes starting with their respective paths
 app.use('/auth', authRouter);
 app.use('/orders', ordersRouter);
 

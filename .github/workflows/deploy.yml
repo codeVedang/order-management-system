@@ -14,9 +14,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # This step zips the entire 'order-service' directory into a 'deploy.zip' file.
-      # The -x flag ensures the large node_modules folder is excluded.
-      # This is the standard and most reliable way to package a Node.js app for Elastic Beanstalk.
+      # This zips the entire 'order-service' directory (excluding node_modules)
+      # which is the standard way to deploy Node.js apps to Elastic Beanstalk.
       - name: Generate Deployment Package
         run: |
           cd order-service
