@@ -100,7 +100,7 @@ docker run -p 3001:3001 --env-file ./.env order-service-app
 The backend server will now be running on http://localhost:3001.
 ```
 
-##Features Implemented
+## Features Implemented
 Secure User Authentication: Full Register/Login system using JWT.
 
 Order Management: Create, view, and list customer orders.
@@ -119,7 +119,7 @@ Fully Documented API: Interactive API documentation is available via Swagger UI 
 
 Automated CI/CD: The backend is automatically deployed to AWS on every push to the main branch using GitHub Actions.
 
-##Tech Stack
+## Tech Stack
 Frontend: React.js, Vite, Tailwind CSS, Axios, Chart.js
 
 Backend: Node.js, Express.js
