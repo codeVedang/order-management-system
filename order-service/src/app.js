@@ -5,9 +5,12 @@ require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
-const path = require('path'); // <-- Import the 'path' module
+const path = require('path'); // <-- Import the built-in 'path' module
 
-// Use path.join to create a reliable, absolute path to swagger.js
+// Use path.join(__dirname, '../swagger') to create a reliable, absolute path.
+// __dirname is a special variable in Node.js that gives the path of the current file (i.e., /src).
+// path.join then correctly navigates up one level to find swagger.js.
+// This works on ANY operating system (Windows, Linux, Mac).
 const setupSwagger = require(path.join(__dirname, '../swagger'));
 
 const ordersRouter = require('./api/orders');
