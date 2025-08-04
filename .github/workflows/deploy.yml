@@ -29,6 +29,7 @@ jobs:
           cp -R order-service/src deploy/
           cp order-service/package.json deploy/
           cp order-service/package-lock.json deploy/
+          cp order-service/swagger.js deploy/ # <-- THIS IS THE NEW LINE
           cd deploy
           zip -r ../deploy.zip .
 
@@ -39,13 +40,7 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: order-management-system
           environment_name: OrderManagementSystem-env
-          
-          # This creates a unique version label for every deployment
           version_label: "v${{ github.run_number }}-${{ github.sha }}"
-          
           region: "ap-south-1"
           deployment_package: deploy.zip
-          
-          # This is the key fix: It tells the action to use the existing version
-          # if it finds one, preventing errors when re-running a failed job.
           use_existing_version_if_available: true
