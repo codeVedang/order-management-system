@@ -1,0 +1,80 @@
+name: Deploy Backend to Elastic Beanstalk
+
+# This section defines WHEN this workflow will run.
+on:
+  # It will run on every "push" event...
+  push:
+    # ...but only for the "main" branch.
+    branches:
+      - main
+
+# This section defines the jobs to be run. We only have one job called "deploy".
+jobs:
+  deploy:
+    # This specifies that the job will run on a fresh virtual machine provided by GitHub, using Ubuntu.
+    runs-on: ubuntu-latest
+
+    # This section lists the sequence of steps the virtual machine will execute.
+    steps:
+      # Step 1: Checkout your repository
+      # This downloads your latest code from the 'main' branch onto the virtual machine.
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Node.js environment
+      # This installs Node.js onto the virtual machine so we can run npm commands.
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18' # Use the same version as your local machine
+
+      # Step 3: Install Backend Dependencies
+      # This runs "npm install" inside your /order-service directory.
+      # This is the Node.js equivalent of "Build with Maven" for Java.
+      - name: Install Backend Dependencies
+        working-directory: ./order-service
+        run: npm install
+
+      # Step 4 (Optional but good practice): Run Tests
+      # This step would run your automated tests. We have it commented out for now.
+      # - name: Run Backend Tests
+      #   working-directory: ./order-service
+      #   run: npm test
+
+      # Step 5: Generate Deployment Package
+      # This prepares your application for deployment by creating a .zip file.
+      # It only includes the files needed for production, not the entire project.
+      - name: Generate Deployment Package
+        run: |
+          mkdir deploy
+          # Copy only the necessary backend files for production
+          cp -R order-service/src deploy/
+          cp order-service/package.json deploy/
+          cp order-service/package-lock.json deploy/
+          # We do NOT copy .env, as secrets will be handled securely by GitHub.
+          cd deploy
+          zip -r ../deploy.zip .
+
+      # Step 6: Deploy to AWS Elastic Beanstalk
+      # This is the final step that uploads the .zip file to AWS.
+      - name: Deploy to AWS Elastic Beanstalk
+        uses: einaregilsson/beanstalk-deploy@v21
+        with:
+          # These secrets will be securely stored in your GitHub repository settings.
+          # The workflow will have permission to use them without exposing them in the code.
+          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          
+          # These are the names of your application and environment on AWS Elastic Beanstalk.
+          # We will create these in the next phase.
+          application_name: order-management-system
+          environment_name: OrderManagementSystem-env
+          
+          # This creates a unique version label for each deployment, e.g., "v1", "v2".
+          version_label: "v${{ github.run_number }}"
+          
+          # This must match the region where you create your Elastic Beanstalk environment.
+          region: "ap-south-1"
+          
+          # The name of the .zip file we created in the previous step.
+          deployment_package: deploy.zip
