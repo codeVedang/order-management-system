@@ -39,11 +39,11 @@ jobs:
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           application_name: order-management-system
           environment_name: OrderManagementSystem-env
-          
-          # --- THIS IS THE UPDATED LINE ---
-          # It now combines the run number with the unique Git commit ID (short version).
-          # This ensures the version label is always unique.
           version_label: "v${{ github.run_number }}-${{ github.sha }}"
-          
           region: "ap-south-1"
           deployment_package: deploy.zip
+          
+          # --- THIS IS THE NEW LINE ---
+          # This tells the action to use the existing version if it finds one,
+          # which prevents errors when re-running a failed job.
+          use_existing_version_if_available: true
