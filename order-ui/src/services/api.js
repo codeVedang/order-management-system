@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL // backend URL
+  baseURL: 'http://ordermanagementsystem-env.eba-cqzipdwb.ap-south-1.elasticbeanstalk.com/',// backend URL
 });
 
 // This is an "interceptor". It's a function that runs before every single request is sent.
