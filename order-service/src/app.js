@@ -15,11 +15,12 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// --- THIS IS THE CRITICAL FIX ---
+// --- THIS IS THE DEFINITIVE FIX ---
 // Only load and set up Swagger if we are NOT in the production environment.
-// Elastic Beanstalk automatically sets NODE_ENV to 'production'.
+// Elastic Beanstalk automatically sets the NODE_ENV variable to 'production'.
 if (process.env.NODE_ENV !== 'production') {
   console.log('Development environment detected, setting up Swagger...');
+  // Use a reliable path to find swagger.js for local development
   const setupSwagger = require(path.join(__dirname, '../swagger'));
   setupSwagger(app);
 }
